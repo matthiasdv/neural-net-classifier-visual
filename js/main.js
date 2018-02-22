@@ -50,12 +50,13 @@ function prepSet(set) {
   }))
 }
 
+// lends itself to function composition
 function affineTransformation(cv, tm, tv) {
   const a = linearTransformation(cv, tm);
   const b = translate(a, tv);
 
-  // return [Math.tanh(b[0]), Math.tanh(b[1])];
-  return b;
+  return [Math.tanh(b[0]), Math.tanh(b[1])];
+  // return b;
 }
 
 function linearTransformation(cv, t) {
@@ -89,8 +90,8 @@ function loop(conf) {
   });
 
   sketch.setup = function() {
-    const w = sketch.width / 2;
-    const h = sketch.height / 2;
+    const w = 1;
+    const h = 1;
 
     const gr = Math.sqrt(conf.g);
 
@@ -102,11 +103,11 @@ function loop(conf) {
     // init grid vertices
     for (let k=0 ; k<gr; k++) {
       for (let l=0 ; l<gr; l++) {
-        // G[k*gr+l] = [k*wg, l*hg];
-        // G[k*gr+l] = linearTransformation([k*wg, l*hg],  [[1.2, 0], [0.5, 1]]);
-        // G[k*gr+l] = translate([k*wg, l*hg], [100,100])
-        G[k*gr+l] = affineTransformation([k*wg, l*hg], [[1.2, 0], [0.5, 1]], [100,-100])
-        G[k*gr+l] = affineTransformation(G[k*gr+l],[[1, 1.2], [-0.5, 1]], [-50,70])
+        // lendsitself perfectly to functional programming
+        G[k*gr+l] = [k*wg - w/2, l*hg -w/2];
+        // G[k*gr+l] = affineTransformation(G[k*gr+l], [[1, 0], [0, 1]], [0,0])
+        // G[k*gr+l] = affineTransformation(G[k*gr+l], [[1.2, 0], [0.5, 1]], [0,0])
+        G[k*gr+l] = affineTransformation(G[k*gr+l],[[1, 1.2], [-0.5, 3]], [0.1,0.7])
       }
     }
 
@@ -122,14 +123,14 @@ function loop(conf) {
     const w = sketch.width / 2;
     const h = sketch.height / 2;
 
-    const oX = w / 2;
-    const oY = h / 2;
+    const oX = w;
+    const oY = h;
 
 
     // render grid vertices
     for (let j=0; j<conf.g; j++) {
-      const xCoord = G[j][0];
-      const yCoord = G[j][1];
+      const xCoord = G[j][0] * 300;
+      const yCoord = G[j][1] * 300;
       renderVertex(sketch, xCoord, yCoord, oX, oY, undefined, .5);
     }
   };
