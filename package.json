@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convnetjs": "^0.3.0",
-    "d3-request": "^1.0.6"
+    "d3-request": "^1.0.6",
+    "synaptic": "^1.1.4"
   }
 }
