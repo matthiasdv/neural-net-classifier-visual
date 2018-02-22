@@ -50,9 +50,33 @@ function prepSet(set) {
   }))
 }
 
+function affineTransformation(cv, tm, tv) {
+  const a = linearTransformation(cv, tm);
+  const b = translate(a, tv);
+
+  // return [Math.tanh(b[0]), Math.tanh(b[1])];
+  return b;
+}
+
+function linearTransformation(cv, t) {
+  const x = cv[0]
+  const y = cv[1]
+  const a = t[0][0]
+  const b = t[0][1]
+  const c = t[1][0]
+  const d = t[1][1]
+
+  return [a*x + b*y, c*x + d*y]
+}
+
+function translate(cv, b) {
+  const x = cv[0]
+  const y = cv[1]
+  return [x+b[0], y+b[1]]
+}
+
 
 function loop(conf) {
-  console.log(conf.set);
   const G = new Array(conf.g); // to display the grid
   const X = new Array(conf.m); // m x 2 matrix
   const Y = new Array(conf.m); // vector of length m
@@ -68,9 +92,6 @@ function loop(conf) {
     const w = sketch.width / 2;
     const h = sketch.height / 2;
 
-    const wu = w/100;
-    const hu = h/100;
-
     const gr = Math.sqrt(conf.g);
 
     console.log(`width: ${w}px height: ${h}px`);
@@ -81,9 +102,15 @@ function loop(conf) {
     // init grid vertices
     for (let k=0 ; k<gr; k++) {
       for (let l=0 ; l<gr; l++) {
-        G[k*gr+l] = [k*wg, l*hg];
+        // G[k*gr+l] = [k*wg, l*hg];
+        // G[k*gr+l] = linearTransformation([k*wg, l*hg],  [[1.2, 0], [0.5, 1]]);
+        // G[k*gr+l] = translate([k*wg, l*hg], [100,100])
+        G[k*gr+l] = affineTransformation([k*wg, l*hg], [[1.2, 0], [0.5, 1]], [100,-100])
+        G[k*gr+l] = affineTransformation(G[k*gr+l],[[1, 1.2], [-0.5, 1]], [-50,70])
       }
     }
+
+    console.log(G)
   };
 
   sketch.update = function() {
@@ -95,16 +122,9 @@ function loop(conf) {
     const w = sketch.width / 2;
     const h = sketch.height / 2;
 
-    const wu = w/100;
-    const hu = h/100;
-
     const oX = w / 2;
     const oY = h / 2;
 
-    // render frame
-    sketch.strokeStyle = '#eee';
-    sketch.rect(oX,oY,100*wu,100*hu);
-    sketch.stroke();
 
     // render grid vertices
     for (let j=0; j<conf.g; j++) {
